@@ -5,7 +5,9 @@ import random
 from src.nlp.fuzzy_match import fuzzy_match_style, fuzzy_match_category
 
 model = joblib.load("../models/expanded_intent_classifier_v4.pkl")
-catalog = pd.read_csv("../data/product_catalog_100_items.csv")
+# The original code referenced ``product_catalog_100_items.csv`` which does not
+# exist in the repository.  Use the available sample catalog instead.
+catalog = pd.read_csv("../data/Shopping_product_catalog.csv")
 
 context = {"category": None, "style": None, "max_price": None}
 awaiting_confirmation = False
