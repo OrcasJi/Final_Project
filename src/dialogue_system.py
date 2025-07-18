@@ -134,82 +134,89 @@ def reset_context():
     context = {"category": None, "style": None, "max_price": None}
     awaiting_confirmation = False
 
-print("🛍️ AI Shopping Assistant: Hi there! Ask me anything about fashion or shopping.")
+def start_chat():
+    """Run the interactive shopping assistant."""
 
-while True:
-    user_input = input("You: ").strip()
-    if not user_input:
-        continue
+    print("🛍️ AI Shopping Assistant: Hi there! Ask me anything about fashion or shopping.")
 
-    predicted_intent = model.predict([user_input])[0]
+    while True:
+        user_input = input("You: ").strip()
+        if not user_input:
+            continue
 
-    if predicted_intent == "done":
-        print("Assistant:", random.choice(done_responses))
-        break
+        predicted_intent = model.predict([user_input])[0]
 
-    if predicted_intent == "thank_you":
-        print("Assistant:", random.choice(thank_you_responses))
-        continue
-
-    if predicted_intent == "greet":
-        print("Assistant:", random.choice(intent_responses["greet"]))
-        continue
-
-    if predicted_intent == "confirmation" and awaiting_confirmation and last_recommendation_count > 0:
-        print("Assistant:", random.choice(confirmation_responses))
-        print("Assistant:", random.choice(intent_responses["ask_product"]))
-        reset_context()
-        continue
-
-    if predicted_intent == "reject" and awaiting_confirmation:
-        print("Assistant:", random.choice(rejection_responses))
-        reset_context()
-        continue
-
-    if predicted_intent == "undecided":
-        print("Assistant:", random.choice(guidance_responses))
-        print("Assistant:", recommend_products() + suggest_remaining_context())
-        reset_context()
-        continue
-
-    price = extract_price(user_input)
-    style = extract_style(user_input) or fuzzy_match_style(user_input)
-    category = extract_category(user_input) or fuzzy_match_category(user_input)
-
-    extracted_info = False
-    if price:
-        context["max_price"] = price
-        extracted_info = True
-    if style:
-        context["style"] = style
-        extracted_info = True
-    if category:
-        context["category"] = category
-        extracted_info = True
-
-    print("DEBUG:", context)
-
-    ready_for_full_recommendation = all([
-        context["category"],
-        context["style"],
-        context["max_price"]
-    ])
-
-    if context["category"] or context["style"] or context["max_price"]:
-        print("Assistant:", recommend_products(partial_ok=True) + suggest_remaining_context())
-        if last_recommendation_count <= 3 and ready_for_full_recommendation:
-            print("Assistant: Do any of these options look good to you?")
-            awaiting_confirmation = True
-        continue
-
-    if not extracted_info:
-        invalid_count += 1
-        if invalid_count >= 3:
-            print("Assistant: I can help better if you share your style, product type, or budget 😊")
+        if predicted_intent == "done":
+            print("Assistant:", random.choice(done_responses))
+            break
+    
+        if predicted_intent == "thank_you":
+            print("Assistant:", random.choice(thank_you_responses))
+            continue
+    
+        if predicted_intent == "greet":
+            print("Assistant:", random.choice(intent_responses["greet"]))
+            continue
+    
+        if predicted_intent == "confirmation" and awaiting_confirmation and last_recommendation_count > 0:
+            print("Assistant:", random.choice(confirmation_responses))
+            print("Assistant:", random.choice(intent_responses["ask_product"]))
+            reset_context()
+            continue
+    
+        if predicted_intent == "reject" and awaiting_confirmation:
+            print("Assistant:", random.choice(rejection_responses))
+            reset_context()
+            continue
+    
+        if predicted_intent == "undecided":
+            print("Assistant:", random.choice(guidance_responses))
+            print("Assistant:", recommend_products() + suggest_remaining_context())
+            reset_context()
+            continue
+    
+        price = extract_price(user_input)
+        style = extract_style(user_input) or fuzzy_match_style(user_input)
+        category = extract_category(user_input) or fuzzy_match_category(user_input)
+    
+        extracted_info = False
+        if price:
+            context["max_price"] = price
+            extracted_info = True
+        if style:
+            context["style"] = style
+            extracted_info = True
+        if category:
+            context["category"] = category
+            extracted_info = True
+    
+        print("DEBUG:", context)
+    
+        ready_for_full_recommendation = all([
+            context["category"],
+            context["style"],
+            context["max_price"]
+        ])
+    
+        if context["category"] or context["style"] or context["max_price"]:
+            print("Assistant:", recommend_products(partial_ok=True) + suggest_remaining_context())
+            if last_recommendation_count <= 3 and ready_for_full_recommendation:
+                print("Assistant: Do any of these options look good to you?")
+                awaiting_confirmation = True
+            continue
+    
+        if not extracted_info:
+            invalid_count += 1
+            if invalid_count >= 3:
+                print("Assistant: I can help better if you share your style, product type, or budget 😊")
+                invalid_count = 0
+        else:
             invalid_count = 0
-    else:
-        invalid_count = 0
+    
+            missing = prompt_missing_context()
+            if missing:
+                print("Assistant:", random.choice(missing))
 
-    missing = prompt_missing_context()
-    if missing:
-        print("Assistant:", random.choice(missing))
+
+if __name__ == "__main__":
+    start_chat()
