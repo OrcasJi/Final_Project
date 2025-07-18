@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report
 import joblib
 
 # Step 1: 读取训练数据
-df = pd.read_csv("intent_training_data_extended.csv")  # 文件名根据你保存的为准
+df = pd.read_csv("../../data/intent_training_data_extended.csv")  # 文件名根据你保存的为准
 X = df["text"]
 y = df["intent"]
 
@@ -29,5 +29,5 @@ print("=== Classification Report ===")
 print(classification_report(y_test, y_pred))
 
 # Step 6: 保存模型
-joblib.dump(pipeline, "expanded_intent_classifier_v4.pkl")
-print("✅ 模型已保存为 expanded_intent_classifier_v4.pkl")
+joblib.dump(pipeline, "../../models/expanded_intent_classifier_v4.pkl")
+print("✅ Model saved as expanded_intent_classifier_v4.pkl")

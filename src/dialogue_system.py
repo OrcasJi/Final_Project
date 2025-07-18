@@ -2,10 +2,10 @@
 import joblib
 import pandas as pd
 import random
-from fuzzy_match import fuzzy_match_style, fuzzy_match_category
+from src.nlp.fuzzy_match import fuzzy_match_style, fuzzy_match_category
 
-model = joblib.load("expanded_intent_classifier_v4.pkl")
-catalog = pd.read_csv("product_catalog_100_items.csv")
+model = joblib.load("../models/expanded_intent_classifier_v4.pkl")
+catalog = pd.read_csv("../data/product_catalog_100_items.csv")
 
 context = {"category": None, "style": None, "max_price": None}
 awaiting_confirmation = False
